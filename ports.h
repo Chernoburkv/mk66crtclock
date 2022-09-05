@@ -1,0 +1,6 @@
+#define LED_ON (PTC->PSOR = (1U << 5U))
+#define LED_OFF (PTC->PCOR = (1U << 5U))
+#define REL_ON (PTD->PSOR = (1U))
+#define REL_OFF (PTD->PCOR = (1U))
+#define BLANK_ON (PTA->PSOR = (1U << 13U))
+#define BLANK_OFF (PTA->PCOR = (1U << 13U))
