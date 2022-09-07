@@ -4,7 +4,7 @@
 
 #define xPos 1600      // middle of dispaly
 #define yPos 1600      // middle of dispaly
-#define nsteps 1024   // was 240 to be consistent with the old circle angle definition
+#define nsteps 2048   // was 240 to be consistent with the old circle angle definition
 #define stepDelay 50 //32
 #define motionDelay 15  // how fast the beam will get there before enabling15
 #define settlingDelay 10  // let the beam finish its move before turning on8
@@ -30,8 +30,6 @@
 #define field 3 // size, function, stringptr, xpos, ypos   changeable field text
 #define seg 4  // size, function, segptr,    xpos, ypos   segment (special character)
 
-uint8_t flag = 0;
-uint8_t flag1 = 0;
 int thisX, thisY;    // circle position
 int i;
 
@@ -555,8 +553,8 @@ void DoSeg()
     motion = (xmotion > ymotion ? xmotion : ymotion);   // how far to move from previous segment
 
     // go to the start point with beam off
-    WriteDAC1(xstart);
-    WriteDAC0(ystart);
+    *(volatile uint16_t *)&(DAC0_DAT0L) = xstart;
+    *(volatile uint16_t *)&(DAC1_DAT0L) = ystart;
 
     // wait for the beam to reach the start point
    _WAIT_us(motion/motionDelay + settlingDelay);
@@ -568,8 +566,8 @@ void DoSeg()
       thisX = ((costab[(i>>8) % nsteps] * xrad) >> 16) + xcen;
       thisY = ((sintab[(i>>8) % nsteps] * yrad) >> 16) + ycen;
       _WAIT_NOP(stepDelay);  
-      WriteDAC1(thisX);
-      WriteDAC0(thisY);
+      *(volatile uint16_t *)&(DAC0_DAT0L) = thisX;
+      *(volatile uint16_t *)&(DAC1_DAT0L) = thisY;
     }
    _WAIT_us(glowDelayOff);        // wait for glow to start
     BLANK_OFF;        // done, hide dot now
@@ -601,8 +599,8 @@ void DoSeg()
     xmotion = abs(thisX - xstart);
     ymotion = abs(thisY - ystart);
     motion = (xmotion > ymotion ? xmotion : ymotion);   // how far to move from previous segment
-    WriteDAC1(xstart);
-    WriteDAC0(ystart);
+    *(volatile uint16_t *)&(DAC0_DAT0L) = xstart;
+    *(volatile uint16_t *)&(DAC1_DAT0L) = ystart;
     
    _WAIT_us(motion/motionDelay + settlingDelay);
     BLANK_ON;        // start making photons
@@ -612,9 +610,9 @@ void DoSeg()
     for (i=0; i<(len); i += lineStride) {
       thisX = ((i*xinc)>>(8)) + xstart;
       thisY = ((i*yinc)>>(8)) + ystart;
-      _WAIT_NOP(stepDelay);   
-      WriteDAC1(thisX);
-      WriteDAC0(thisY);
+      _WAIT_NOP(stepDelay); 
+      *(volatile uint16_t *)&(DAC0_DAT0L) = thisX;
+      *(volatile uint16_t *)&(DAC1_DAT0L) = thisY;
     }
    _WAIT_us(glowDelayOff);        // wait for glow to start
     BLANK_OFF;        // done, hide dot now
@@ -1193,10 +1191,10 @@ int main (void) {
     tabYSize[i]  = (int)(65536*cos(TWO_PI*i/nsteps))/500; 
     tabXStart[i] = (int)(65536*sin(TWO_PI*i/nsteps))/650;
     tabYStart[i] = (int)(65536*cos(TWO_PI*i/nsteps))/650; 
-
- //SIM_SCGC5 |=   SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTE_MASK;
+ }
+  SIM_SCGC5 |=   SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTE_MASK;
   SIM_SCGC2 |= (SIM_SCGC2_DAC0_MASK|SIM_SCGC2_DAC1_MASK);
-  SIM_SCGC5 |=   (SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK);
+  //SIM_SCGC5 |=   (SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK);
   PORTA->PCR[13] = PORT_PCR_MUX(1U);
   PTA->PDDR = (1U << 13U);
   PORTC->PCR[5] = PORT_PCR_MUX(1U);
@@ -1211,13 +1209,10 @@ int main (void) {
 
   DAC0_C0 = (DAC_C0_DACEN_MASK);
   DAC1_C0 = (DAC_C0_DACEN_MASK);
-  _WAIT(10000);
+  _WAIT(7000);
   REL_ON;
   LED_OFF;
 
-  
-  
-}
 
 
 
@@ -1240,6 +1235,7 @@ int main (void) {
   whichList = ClkList[theClock];       // point to the clock drawlist we are displaying now       // clock 0 has hands to draw
   copyList(whichList); 
   Center(TheList);
+  _WAIT_us(5600);
   }   
     
 
