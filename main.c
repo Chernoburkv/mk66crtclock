@@ -39,8 +39,7 @@ int costab[nsteps];  // scaled int angle lookup tables, filled in during init
 int tabXSize[nsteps];
 int tabYSize[nsteps]; 
 int tabXStart[nsteps];
-int tabYStart[nsteps];
-uint32_t temp_time; 
+int tabYStart[nsteps]; 
 
 // timekeeping variables
 static uint8_t Century = 20;   // century range 19-20
@@ -57,7 +56,7 @@ int XSaver;          // current X offset of screensaver
 int YSaver;          // current Y offset of screensaver
 
 
-uint8_t theClock = 0;        // which clock face to show
+uint8_t theClock = 4;        // which clock face to show
 
 // Text string variables
 char *StrPtr;        // points to text string location
@@ -115,8 +114,6 @@ struct item TheList[20];    // the list above is copied into here to allow modif
 
 struct item * whichList;
 
-
-const int NClks = 9; 
 int lastHour = 0;
 
 // circle:              cir,XC,YC,XS,YS,FO,LO{,width|0x80}
@@ -1187,11 +1184,15 @@ int main (void) {
  for (i=0;i<nsteps;i++) {
     sintab[i]    = (int)(65536*sin(TWO_PI*i/nsteps));
     costab[i]    = (int)(65536*cos(TWO_PI*i/nsteps));
-    tabXSize[i]  = (int)(65536*sin(TWO_PI*i/nsteps))/500;
-    tabYSize[i]  = (int)(65536*cos(TWO_PI*i/nsteps))/500; 
-    tabXStart[i] = (int)(65536*sin(TWO_PI*i/nsteps))/650;
-    tabYStart[i] = (int)(65536*cos(TWO_PI*i/nsteps))/650; 
  }
+  
+  for (i=0;i<nsteps;i++) {
+    tabXSize[i]  = (int)sintab[i]/500;
+    tabYSize[i]  = (int)costab[i]/500; 
+    tabXStart[i] = (int)sintab[i]/650;
+    tabYStart[i] = (int)costab[i]/650; 
+ }
+  
   SIM_SCGC5 |=   SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTE_MASK;
   SIM_SCGC2 |= (SIM_SCGC2_DAC0_MASK|SIM_SCGC2_DAC1_MASK);
   //SIM_SCGC5 |=   (SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTC_MASK | SIM_SCGC5_PORTD_MASK);
@@ -1231,7 +1232,7 @@ int main (void) {
   readRTCtime();   // read whichever clock is correctest, make it be local time
   makeTimeStrings();              // fill in the time variables into number strings
   updateScreenSaver();
-  theClock = 4;
+  //theClock = 4;
   whichList = ClkList[theClock];       // point to the clock drawlist we are displaying now       // clock 0 has hands to draw
   copyList(whichList); 
   Center(TheList);
