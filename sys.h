@@ -34,18 +34,6 @@ void WriteDAC0(int val);
 
 void WriteDAC1(int val);
 
-void WriteDAC00(uint16_t val);
-
-void WriteDAC01(uint16_t val);
-
-void WriteDAC000(uint16_t val);
-
-void WriteDAC001(uint16_t val);
-
-void WriteDAC0000(int val);
-
-void WriteDAC0001(int val);
-
 int GetWDay(int d, int mon, int yr, int cent);
 
 int number_days(int m, int y);
