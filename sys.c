@@ -30,44 +30,13 @@ void _WAIT_NOP (uint32_t stepDelay)
 
 }
 
+
+
+
+
+
+
 void WriteDAC0(int val)
-{
-  *(volatile int16_t *)&(DAC0_DAT0L) = val;
-}
-
-
-void WriteDAC1(int val)
-{
-  *(volatile int16_t *)&(DAC1_DAT0L) = val;
-}
-
-
-void WriteDAC00(uint16_t val)
-{
-  *(volatile uint16_t *)&(DAC0_DAT0L) = val;
-}
-
-
-void WriteDAC01(uint16_t val)
-{
-  *(volatile uint16_t *)&(DAC1_DAT0L) = val;
-}
-
-void WriteDAC000(uint16_t val)
-{
-  DAC0_DAT0L = val;
-}
-
-
-void WriteDAC001(uint16_t val)
-{
-  DAC1_DAT0L = val;
-}
-
-
-
-
-void WriteDAC0000(int val)
 {
 	SIM_SCGC2 |= SIM_SCGC2_DAC0_MASK;
 	
@@ -82,7 +51,7 @@ void WriteDAC0000(int val)
 
 
 
-void WriteDAC0001(int val)
+void WriteDAC1(int val)
 {
 	SIM_SCGC2 |= SIM_SCGC2_DAC1_MASK;
 	
