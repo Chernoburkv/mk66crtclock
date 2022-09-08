@@ -11,7 +11,7 @@
 #define settlingDelay 10  // let the beam finish its move before turning on8
 #define glowDelayOn 2  // let the beam finish its move before turning on8 2
 #define glowDelayOff 3 // wait for beam to get bright before moving7 3
-#define circleSpeed 65535   // angular step; bigger makes circles draw faster and more coarsely
+#define circleSpeed 51200   // angular step; bigger makes circles draw faster and more coarsely 65535
 #define lineStride  1  // linear step; bigger makes lines draw faster and more coarsely
 
 
@@ -281,10 +281,10 @@ void DoSeg()
     int ycen = YCenter * Scale + ChrYPos + YSaver + yPos;  // Y center position
     int xrad = (XSize * Scale) / 2;         // X size: radius is diameter/2 
     int yrad = (YSize * Scale) / 2;         // Y size
-    int firstAngle = FirstO     * (nsteps >> 3);
+    int firstAngle = FirstO * (nsteps >> 3);
     int lastAngle = (LastO + 1) * (nsteps >> 3); 
     int bigness = (xrad > yrad ? xrad : yrad );
-    int stride = (circleSpeed<<8) / bigness;   // stride is scaled by 256 to allow finer resolution of step size
+    int stride = circleSpeed / bigness;   // stride is scaled by 256 to allow finer resolution of step size
     xstart = ((costab[firstAngle] * xrad)>>16) + xcen;
     ystart = ((sintab[firstAngle] * yrad)>>16) + ycen;
     xmotion = abs(thisX - xstart);
