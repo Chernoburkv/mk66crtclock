@@ -284,7 +284,7 @@ void DoSeg()
     int firstAngle = FirstO     * (nsteps >> 3);
     int lastAngle = (LastO + 1) * (nsteps >> 3); 
     int bigness = (xrad > yrad ? xrad : yrad );
-    int stride = (circleSpeed) / bigness;   // stride is scaled by 256 to allow finer resolution of step size
+    int stride = (circleSpeed<<8) / bigness;   // stride is scaled by 256 to allow finer resolution of step size
     xstart = ((costab[firstAngle] * xrad)>>16) + xcen;
     ystart = ((sintab[firstAngle] * yrad)>>16) + ycen;
     xmotion = abs(thisX - xstart);
